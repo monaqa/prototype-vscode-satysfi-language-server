@@ -10,7 +10,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:prototype-vscode-satysfi-language-server.helloWorld"
+		"onLanguage:satysfi",
+		"workspaceContains:**/*.{saty,satyh}"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -28,6 +29,10 @@
 		"pretest": "npm run compile && npm run lint",
 		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js"
+	},
+	"dependencies": {
+		"vscode-languageclient": "^7.0.0",
+		"vscode-languageserver-protocol": "^3.16.0"
 	},
 	"devDependencies": {
 		"@types/vscode": "^1.57.0",

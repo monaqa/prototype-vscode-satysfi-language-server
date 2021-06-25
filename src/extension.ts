@@ -1,26 +1,51 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import {ServerOptions, LanguageClient, LanguageClientOptions, TransportKind} from 'vscode-languageclient/node';
+
+
+let client: LanguageClient;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "prototype-vscode-satysfi-language-server" is now active!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('prototype-vscode-satysfi-language-server.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from prototype-vscode-satysfi-language-server!');
-	});
+  // The server is implemented in node
+  const serverModule = context.asAbsolutePath("server/satysfi-language-server");
 
-	context.subscriptions.push(disposable);
+  // If the extension is launched in debug mode then the debug server options are used
+  // Otherwise the run options are used
+  const serverOptions: ServerOptions = {
+    run: { command: serverModule, transport: TransportKind.pipe },
+    debug: {
+      command: serverModule,
+      transport: TransportKind.pipe,
+    }
+  };
+
+  // Options to control the language client
+  const clientOptions: LanguageClientOptions = {
+    // Register the server for plain text documents
+    documentSelector: [{ scheme: 'file', language: 'satysfi' }],
+  };
+
+  // Create the language client and start the client.
+  client = new LanguageClient(
+    'languageServerExample',
+    'Language Server Example',
+    serverOptions,
+    clientOptions
+  );
+
+  // Start the client. This will also launch the server
+  client.start();
+
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate(): Thenable<void> | undefined {
+  if (!client) {
+    return undefined;
+  }
+  return client.stop();
+}
